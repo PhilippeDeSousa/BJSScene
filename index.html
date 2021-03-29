@@ -48,20 +48,27 @@
         var scene = null;
         var sceneToRender = null;
         var createDefaultEngine = function () { return new BABYLON.Engine(canvas, true, { preserveDrawingBuffer: true, stencil: true, disableWebGL2Support: false }); };
-        var delayCreateScene = function () {
-            console.log('hello world');
-            // Create a scene.
+        var createScene = function () {
+
             var scene = new BABYLON.Scene(engine);
+            var cam = new BABYLON.ArcRotateCamera("ArcRotateCamera", 0, 0, 5, new BABYLON.Vector3(0, 3, 0), scene);
 
-            BABYLON.SceneLoader.Load("http://localhost:8000/", "from_playground.babylon", engine, function (sc) {
-                console.log('jai fiat le callback')
-                scene.dispose;
-                scene = sc;
+            BABYLON.SceneLoader.Load("", "https://raw.githubusercontent.com/PhilippeDeSousa/BJSScene/master/scene.babylon", engine, function (scene) {
+
+                engine.runRenderLoop(function () {
+                    scene.render();
+                });
+                BABYLON.GLTF2Export.GLTFAsync(scene, "Naker_gltf").then(gltf => {
+                    console.log('Bin size: ', gltf.glTFFiles['Naker_gltf.bin']);
+                    //console.log(gltf.glTFFiles['Naker_gltf.gltf']);
+                    //gltf.downloadFiles();
+                })
+
             });
-
 
             return scene;
         };
+
         var engine;
         var scene;
         initFunction = async function () {
@@ -76,7 +83,7 @@
 
             engine = await asyncEngineCreation();
             if (!engine) throw 'engine should not be null.';
-            scene = delayCreateScene();
+            scene = createScene();
         };
         initFunction().then(() => {
             sceneToRender = scene
